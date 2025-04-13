@@ -1,0 +1,11 @@
+Состояние: активен
+
+В                          Действие    Из
+-                          --------    --
+Nginx HTTP                 ALLOW       Anywhere                  
+80/tcp                     ALLOW       Anywhere                  
+8080/tcp                   DENY        Anywhere                  
+Nginx HTTP (v6)            ALLOW       Anywhere (v6)             
+80/tcp (v6)                ALLOW       Anywhere (v6)             
+8080/tcp (v6)              DENY        Anywhere (v6)             
+
