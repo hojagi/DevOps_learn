@@ -1,0 +1,12 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "deb" do |deb|
+    deb.vm.box = "ubuntu/trusty64"
+  end
+  config.vm.define "red" do |red|
+    red.vm.box = "generic/centos8"
+  end
+  config.vm.provision "ansible" do |ansible|
+       ansible.playbook = "install-software.yaml"
+       ansible.inventory_path = "inventory.ini"
+  end
+end

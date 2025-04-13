@@ -1,0 +1,47 @@
+---
+- name: Install JDK, Maven, PostgreSQL, and Nginx
+  hosts: deb, red
+  vars:
+    jdk_version: "openjdk-7-jdk"  # Версия JDK для Debian based
+    maven_version: "maven"          # Maven для Debian based
+    postgres_version: "postgresql"  # PostgreSQL для Debian based
+    nginx_version: "nginx"          # Nginx для Debian based
+
+    jdk_rpm: "java-11-openjdk-devel"  # Версия JDK для RedHat based
+    maven_rpm: "maven"          # Maven для RedHat based
+    postgres_rpm: "postgresql-server"  # PostgreSQL для RedHat based
+    nginx_rpm: "nginx"            
+  become: true
+  
+  tasks:
+    - name: Install JDK
+      package:
+        name: "{{ jdk_version if ansible_os_family == 'Debian' else jdk_rpm }}"
+        state: present
+
+    - name: Install Maven
+      package:
+        name: "{{ maven_version if ansible_os_family == 'Debian' else maven_rpm }}"
+        state: present
+
+    - name: Install PostgreSQL
+      package:
+        name: "{{ postgres_version if ansible_os_family == 'Debian' else postgres_rpm }}"
+        state: present
+
+    - name: Install Nginx
+      package:
+        name: "{{ nginx_version if ansible_os_family == 'Debian' else nginx_rpm }}"
+        state: present
+ 
+    - name: Ensure PostgreSQL service is started and enabled
+      service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Ensure Nginx service is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: true
