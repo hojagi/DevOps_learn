@@ -1,0 +1,22 @@
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name = webdom www.webdom.local;
+	return 301 https://$host$request_uri;
+}
+server {
+	listen 443 ssl;
+
+	root /var/www/webdom/html;
+	index index.html index.htm index.nginx-debian.html;
+	
+	server_name = webdom www.webdom.local;
+	ssl_certificate /etc/ssl/certs/webdom.crt;
+	ssl_certificate_key /etc/ssl/private/webdom.key;
+	ssl_session_timeout 30m;
+	
+	location / {
+		proxy_pass http://127.0.0.1:8080;
+	}
+}
