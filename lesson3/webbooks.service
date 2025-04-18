@@ -1,0 +1,10 @@
+[Unit]
+Description=Webbooks Java Application
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/java -jar /home/ivan/2025-02-example/apps/webbooks/src/main/resources/DigitalLibrary-0.0.1-SNAPSHOT.jar
+User=webbooks
+
+[Install]
+WantedBy=multi-user.target
