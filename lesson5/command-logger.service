@@ -1,0 +1,11 @@
+[Unit]
+Description=Command Logger
+
+[Service]
+Type=simple
+ExecStart=/home/ivan/command_logger.sh
+StandardInput=pipe
+Restart=always
+
+[Install]
+WantedBy=default.target
