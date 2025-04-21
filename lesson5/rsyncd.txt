@@ -1,0 +1,56 @@
+Установка rsync
+sudo apt install rsync
+
+Создание папки на сервере и назначение владельца/прав
+sudo mkdir /home/ivan/lesson5/backup
+sudo chown nobody:nogroup /home/ivan/lesson5/backup
+sudo chmod 755 /home/ivan/lesson5/backup
+
+Создал файл конфигурации rsyncd.conf
+sudo vim /etc/rsyncd.conf
+
+[backup]
+path = /home/ivan/lesson5/backup
+comment = Backup directory
+read only = no
+list = yes
+uid = nobody
+gid = nogroup
+auth users = syncuser
+secrets file = /etc/rsyncd.secrets
+
+Создал файл с кредами:
+sudo vim /etc/rsyncd.secrets
+
+syncuser:1234
+
+Оставил права только для чтения
+sudo chmod 600 /etc/rsyncd.secrets
+
+Запустил сервис как демон
+sudo rsync --daemon
+
+Создал Unit-файл для сервиса
+sudo vim /etc/systemd/system/rsyncd.service
+
+[Unit]
+Description=Rsync Daemon
+
+[Service]
+ExecStart=/usr/bin/rsync --daemon
+
+[Install]
+WantedBy=multi-user.target
+
+
+Активировал и запустил сервис
+sudo systemctl enable rsyncd
+sudo systemctl start rsyncd
+
+На клиенте создал папку data
+sudo mkdir /home/ivan/lesson5/data
+
+rsync -avz /home/ivan/lesson5/data syncuser@10.11.12.133::backup
+Ввел пароль - прошла синхронизация
+
+На сервер скопировались данные из папки-клиента data в папку-сервер backup
