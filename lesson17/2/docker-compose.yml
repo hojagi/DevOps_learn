@@ -1,0 +1,49 @@
+services:
+    proxy:
+        image: nginx
+        hostname: proxy
+        restart: always
+        ports:
+          - "80:80"
+        networks:
+          def:
+        volumes:
+          - ./nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+          - webbooks
+
+    wbdb-17:
+        image: postgres:12
+        hostname: wbdb-17
+        restart: unless-stopped
+        volumes:
+          - /mnt/d/devops/lesson17/2/webbooks/src/main/resources/data.sql:/docker-entrypoint-initdb.d/db.sql
+          - webbooks-data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: db_webbooks
+        ports:
+          - "5432:5432"
+        networks:
+          def:
+
+    webbooks:
+        hostname: webbooks
+        depends_on:
+          - wbdb-17
+        build:
+          context: .
+          dockerfile: Dockerfile
+#        ports:
+#          - "8080:8080"
+        networks:
+          def:
+        deploy:
+          replicas: 3
+            
+volumes:
+    webbooks-data:
+
+networks:
+    def:
