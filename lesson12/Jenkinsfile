@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build and tests') {
+		    when {
+                branch 'PR-*'
+            }
+            steps {
+			    dir('lesson12') {
+				    sh "chmod -R 777 webbooks"
+				}
+                dir('lesson12/webbooks') {
+				    
+					sh "./mvnw package -DDB.url=jdbc:postgresql://192.168.56.112:5432/webbooks"
+                }
+            }
+
+            post {
+                success {
+					echo 'Build and tests success complete'
+                }
+            }
+        }
+        stage('Build, create artefact and pipeline') {
+		    when {
+                branch 'main'
+            }
+            steps {
+			    dir('lesson12') {
+				    sh "chmod -R 777 webbooks"
+				}
+                dir('lesson12/webbooks') {
+					sh "./mvnw package -DDB.url=jdbc:postgresql://192.168.56.112:5432/webbooks"
+					build job: 'copy and run jar', wait: false
+                }
+            }
+ 
+            post {
+                success {
+				    echo 'Build, create artefact and pipeline success'
+                    archiveArtifacts '**/target/*.jar'
+                }
+            }
+        }
+    }
+}
