@@ -1,0 +1,23 @@
+pipeline {
+   agent any
+
+   stages {
+       stage('Copy jar and Run') {
+           steps {
+               script {
+                   // Параметры
+                   def remoteHost = '192.168.56.112'
+                   def remoteUser = 'vagrant'
+                   def localJarPath = '/var/lib/jenkins/workspace/build_multibranch_main/lesson12/webbooks/target/DigitalLibrary-0.0.1-SNAPSHOT.jar'
+                   def remoteJarPath = '/home/vagrant/app.jar'
+
+                   // Копирование файла
+                   sh "scp -i /var/lib/jenkins/workspace/private_key ${localJarPath} ${remoteUser}@${remoteHost}:${remoteJarPath}"
+
+                   // Запуск артефакта сборки на удаленной ВМ
+                   sh "ssh -i /var/lib/jenkins/workspace/private_key ${remoteUser}@${remoteHost} 'java -jar ${remoteJarPath}'"
+               }
+           }
+       }
+   }
+}
