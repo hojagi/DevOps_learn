@@ -1,0 +1,49 @@
+# Префикс для LAN сети
+BRIDGE_NET="10.10.1."
+
+DOMAIN="test"
+
+MACHINES = {
+  :db => {
+    :box_name => "bento/ubuntu-22.04",
+    :host_name => "dbVM",  
+    :ip_addr => BRIDGE_NET + "101",
+    :cpu => 1,
+    :ram => 2048,
+  },
+  :back => {
+    :box_name => "bento/ubuntu-22.04",
+    :host_name => "backVM",  
+    :ip_addr => BRIDGE_NET + "102",
+    :cpu => 1,
+    :ram => 2048
+  },
+  :front => {
+    :box_name => "bento/ubuntu-22.04",
+    :host_name => "frontVM",  
+    :ip_addr => BRIDGE_NET + "103",
+    :cpu => 1,
+    :ram => 2048
+  }
+}
+
+Vagrant.configure("2") do |config|
+    MACHINES.each do |boxname, boxconfig|               
+        config.vm.define boxname do |box|
+            box.vm.box = boxconfig[:box_name]              
+            box.vm.host_name = boxconfig[:host_name]        
+            box.vm.usable_port_range = (2200..2250)         
+            box.vm.network "private_network", ip: boxconfig[:ip_addr]
+            box.vm.provider :virtualbox do |vb|
+                vb.name = boxconfig[:host_name]     
+                vb.cpus = boxconfig[:cpu]
+                vb.memory = boxconfig[:ram]
+            end
+			
+			config.vm.provision "ansible" do |ansible|
+	            ansible.playbook = "./ansible/site.yml"
+                ansible.inventory_path = "./ansible/inventory/hosts.ini"
+            end
+        end
+    end
+end
