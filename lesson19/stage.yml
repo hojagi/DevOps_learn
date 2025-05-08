@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stage
+  labels:
+    name: stage-namespace
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: stage-app
+  namespace: stage
+  labels:
+    app: stage-app
+spec:
+  containers:
+  - name: stage-app
+    image: hashicorp/http-echo:latest
+    args:
+    - "-text=stage-app is running!"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: stage-app-service
+  namespace: stage
+spec:
+  selector:
+    app: stage-app
+  ports:
+  - port: 5678
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stage-ingress
+  namespace: stage
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/stage"
+        backend:
+          service:
+            name: stage-app-service
+            port:
+              number: 5678
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: stage
+  name: deny-from-other-namespaces
+spec:
+  podSelector:
+    matchLabels:
+  ingress:
+  - from:
+    - podSelector: {}
