@@ -1,0 +1,9 @@
+@Library('build') _
+
+buildPipelineMP {
+    GITHUB_REPO_CRED = "gitcred"
+    GITHUB_REPO_OWNER = "hojagi"
+    GITHUB_REPO_NAME = "jenkins"
+    GITHUB_REPO_URL = "https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}.git"
+    APPS_LIST_FILE = "apps/apps.json"
+}
