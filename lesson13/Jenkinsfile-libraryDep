@@ -1,0 +1,9 @@
+
+@Library('deploy') _
+
+DeployPipeline {
+    remoteHost = '192.168.56.112'
+    remoteUser = 'vagrant'
+    localJarPath = '/home/vagrant/DigitalLibrary-0.0.1-SNAPSHOT.jar'
+    remoteJarPath = '/home/vagrant/app.jar'
+}
